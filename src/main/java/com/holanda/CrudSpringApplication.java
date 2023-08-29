@@ -7,6 +7,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.util.*;
+
 @SpringBootApplication
 public class CrudSpringApplication {
 
@@ -20,11 +22,21 @@ public class CrudSpringApplication {
 		return args -> {
 			repository.deleteAll();
 
-			Course course = new Course();
-			course.setName("Angular com Spring");
-			course.setCategory("front-end");
+			List<Course> courses = new ArrayList<>();
 
-			repository.save(course);
+			Course angular = new Course();
+			angular.setName("Angular");
+			angular.setCategory("front-end");
+			courses.add(angular);
+
+			Course spring = new Course();
+			spring.setName("Spring Boot");
+			spring.setCategory("back-end");
+			courses.add(spring);
+
+			repository.saveAll(courses);
+
+			System.out.println("Started");
 		};
 	}
 }
