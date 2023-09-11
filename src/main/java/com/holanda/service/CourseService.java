@@ -1,5 +1,6 @@
 package com.holanda.service;
 
+import com.holanda.exception.RecordNotFoundException;
 import com.holanda.model.Course;
 import com.holanda.repository.CoursesRepository;
 import jakarta.validation.Valid;
@@ -23,6 +24,11 @@ public class CourseService {
         this.coursesRepository = coursesRepository;
     }
 
+    public Course findById(@NotNull @Positive Long id) {
+        return coursesRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException(id));
+    }
+
     public List<Course> list() {
         return coursesRepository.findAll();
     }
@@ -31,25 +37,18 @@ public class CourseService {
         return coursesRepository.save(course);
     }
 
-    public Optional<Course> update(@NotNull @Positive Long id, @Valid Course course) {
+    public Course update(@NotNull @Positive Long id, @Valid Course course) {
         return coursesRepository.findById(id)
                 .map(recordFound -> {
                     recordFound.setName(course.getName());
                     recordFound.setCategory(course.getCategory());
                     return coursesRepository.save(recordFound);
-                });
+                }).orElseThrow(() -> new RecordNotFoundException(id));
     }
 
-    public Optional<Course> findById(@NotNull @Positive Long id) {
-        return coursesRepository.findById(id);
+    public void delete(@NotNull @Positive Long id) {
+        coursesRepository.delete(coursesRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException(id)));
     }
 
-    public boolean delete(@NotNull @Positive Long id) {
-        return coursesRepository.findById(id)
-                .map(recordFound -> {
-                    coursesRepository.deleteById(id);
-                    return true;
-                })
-                .orElse(false);
-    }
 }
